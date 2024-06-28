@@ -14,6 +14,8 @@ import { stripWriteOnlyProperties } from '../../utils/filterRequiredProperties';
 // @ts-ignore
 JSONSchemaFaker.extend('faker', () => faker);
 
+const MAX_TICKS = 2500;
+
 // From https://github.com/json-schema-faker/json-schema-faker/tree/develop/docs
 // Using from entries since the types aren't 100% compatible
 const JSON_SCHEMA_FAKER_DEFAULT_OPTIONS = Object.fromEntries([
@@ -43,6 +45,7 @@ const JSON_SCHEMA_FAKER_DEFAULT_OPTIONS = Object.fromEntries([
   ['random', Math.random],
   ['replaceEmptyByRandomValue', false],
   ['omitNulls', false],
+  ['ticks', MAX_TICKS],
 ]);
 
 export function resetGenerator() {
@@ -76,7 +79,13 @@ export function generate(
         () => sortSchemaAlphabetically(JSONSchemaFaker.generate({ ...cloneDeep(updatedSource), __bundled__: bundle })),
         toError
       )
-    )
+    ),
+    E.mapLeft(err => {
+      if (err instanceof RangeError) {
+        return new SchemaTooComplexGeneratorError(resource, err);
+      }
+      return err;
+    })
   );
 }
 
@@ -104,7 +113,7 @@ export function sortSchemaAlphabetically(source: any): any {
 
 export function generateStatic(operation: IHttpOperation, source: JSONSchema): Either<Error, unknown> {
   return pipe(
-    tryCatch(() => sampler.sample(source, { ticks: 2500 }, operation), toError),
+    tryCatch(() => sampler.sample(source, { ticks: MAX_TICKS }, operation), toError),
     E.mapLeft(err => {
       if (err instanceof sampler.SchemaSizeExceededError) {
         return new SchemaTooComplexGeneratorError(operation, err);
@@ -117,11 +126,21 @@ export function generateStatic(operation: IHttpOperation, source: JSONSchema): E
 export class GeneratorError extends Error {}
 
 export class SchemaTooComplexGeneratorError extends GeneratorError {
-  constructor(operation: IHttpOperation, public readonly cause: Error) {
-    super(
-      `The operation ${operation.method.toUpperCase()} ${
-        operation.path
-      } references a JSON Schema that is too complex to generate.`
-    );
+  constructor(resource: IHttpOperation | IHttpParam | IHttpContent, public readonly cause: Error) {
+    super(SchemaTooComplexGeneratorError.getMessage(resource));
+  }
+
+  private static getMessage(resource: IHttpOperation | IHttpParam | IHttpContent) {
+    if ('method' in resource) {
+      return `The operation ${resource.method.toUpperCase()} ${
+        resource.path
+      } references a JSON Schema that is too complex to generate.`;
+    }
+
+    if ('name' in resource) {
+      return `The parameter ${resource.name} references a JSON Schema that is too complex to generate.`;
+    }
+
+    return `The content references a JSON Schema that is too complex to generate.`;
   }
 }
