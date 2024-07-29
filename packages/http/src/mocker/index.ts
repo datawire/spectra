@@ -246,14 +246,14 @@ function findValidationByCode(validations: NonEmptyArray<IPrismDiagnostic>, code
 export const createUnauthorisedResponse = (tags?: string[]): ProblemJsonError =>
   ProblemJsonError.fromTemplate(
     UNAUTHORIZED,
-    'Your request does not fullfil the security requirements and no HTTP unauthorized response was found in the spec, so Spectra is generating this error for you.',
+    'Your request does not fullfil the security requirements and no HTTP unauthorized response was found in the spec, so Spectra is generating this error for you. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
     tags && tags.length ? { headers: { 'WWW-Authenticate': tags.join(',') } } : undefined
   );
 
 export const createUnprocessableEntityResponse = (validations: NonEmptyArray<IPrismDiagnostic>): ProblemJsonError =>
   ProblemJsonError.fromTemplate(
     UNPROCESSABLE_ENTITY,
-    'Your request is not valid and no HTTP validation response was found in the spec, so Spectra is generating this error for you.',
+    'Your request is not valid and no HTTP validation response was found in the spec, so Spectra is generating this error for you. Please contact Blackbird support for more details.',
     {
       validation: validations.map(detail => ({
         location: detail.path,
@@ -404,7 +404,7 @@ const mapPayloadGeneratorError = (source: string) =>
     if (err instanceof SchemaTooComplexGeneratorError) {
       return ProblemJsonError.fromTemplate(
         SCHEMA_TOO_COMPLEX,
-        `Unable to generate ${source} for response. The schema is too complex to generate.`
+        `Unable to generate ${source} for response. The schema is too complex to generate. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
       );
     }
     return err;

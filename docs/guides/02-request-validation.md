@@ -34,7 +34,7 @@ Connection: keep-alive
 {
    "type" : "UNPROCESSABLE_ENTITY",
    "title" : "Invalid request.",
-   "detail" : "Your request is not valid and no HTTP validation response was found in the spec, so Spectra is generating this error for you.",
+   "detail" : "Your request is not valid and no HTTP validation response was found in the spec, so Spectra is generating this error for you. Please contact Blackbird support for more details.",
    "status" : 422,
    "validation" : [
       {
@@ -98,7 +98,7 @@ Will give you the following error:
 ```json
 {
   "type": "NO_SERVER_MATCHED_ERROR",
-  "title": "Route not resolved, no server matched.",
+  "title": "Route not resolved, no server matched. Please contact Blackbird support for more details.",
   "status": 404,
   "detail": "The server url http://nonsense.com/api hasn't been matched with any of the provided servers"
 }

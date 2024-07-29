@@ -27,7 +27,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
     E.fromPredicate(A.isNonEmpty, () =>
       ProblemJsonError.fromTemplate(
         NO_RESOURCE_PROVIDED_ERROR,
-        `The current document does not have any resource to match with.`
+        `The current document does not have any resource to match with. Please contact Blackbird support for more details.`
       )
     ),
     E.chain(resources =>
@@ -84,7 +84,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
         return E.left(
           ProblemJsonError.fromTemplate(
             NO_PATH_MATCHED_ERROR,
-            `The route ${requestPath} hasn't been found in the specification file`
+            `The route ${requestPath} hasn't been found in the specification file. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
           )
         );
       }
@@ -95,7 +95,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
         return E.left(
           ProblemJsonError.fromTemplate(
             NO_METHOD_MATCHED_ERROR,
-            `The route ${requestPath} has been matched, but it does not have "${input.method}" method defined`
+            `The route ${requestPath} has been matched, but it does not have "${input.method}" method defined. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
           )
         );
       }
@@ -118,7 +118,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
           return E.left(
             ProblemJsonError.fromTemplate(
               NO_SERVER_MATCHED_ERROR,
-              `The server url ${requestBaseUrl} hasn't been matched with any of the provided servers`
+              `The server url ${requestBaseUrl} hasn't been matched with any of the provided servers. Please contact Blackbird support for more details.`
             )
           );
         }

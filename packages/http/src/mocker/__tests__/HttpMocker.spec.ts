@@ -367,7 +367,7 @@ describe('mocker', () => {
           expect(selectedExample).toBeDefined();
           assertLeft(response, result => {
             expect(result).toMatchObject({
-              detail: 'Response for contentType: application/json and exampleKey: missingKey does not exist.',
+              detail: 'Response for contentType: application/json and exampleKey: missingKey does not exist. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
               name: 'NOT_FOUND',
               status: 404,
             });
