@@ -944,13 +944,13 @@ describe('body params validation', () => {
               location: ['body', 'id'],
               severity: 'Error',
               code: 'type',
-              message: 'Request body property id must be integer',
+              message: 'Request body property id must be integer. Please contact Blackbird support for more details.',
             },
             {
               location: ['body', 'status'],
               severity: 'Error',
               code: 'enum',
-              message: 'Request body property status must be equal to one of the allowed values: open, close',
+              message: 'Request body property status must be equal to one of the allowed values: open, close. Please contact Blackbird support for more details.',
             },
           ],
         });
@@ -1007,7 +1007,7 @@ describe('body params validation', () => {
 
         expect(response.status).toBe(415);
         expect(response.json()).resolves.toMatchObject({
-          detail: 'Cannot deserialize JSON object array in form data request body. Make sure the array is in JSON',
+          detail: 'Cannot deserialize JSON object array in form data request body. Make sure the array is in JSON. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
           status: 415,
           title: 'Invalid content type',
           type: 'INVALID_CONTENT_TYPE',
@@ -1050,7 +1050,7 @@ describe('body params validation', () => {
           expect(response.status).toBe(415);
           expect(response.json()).resolves.toMatchObject({
             detail:
-              'Boundary parameter for multipart/form-data is not defined or generated in the request header. Try removing manually defined content-type from your request header if it exists.',
+              'Boundary parameter for multipart/form-data is not defined or generated in the request header. Try removing manually defined content-type from your request header if it exists. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
             status: 415,
             title: 'Invalid content type',
             type: 'INVALID_CONTENT_TYPE',

@@ -1,32 +1,32 @@
 import type { ProblemJson } from '../types';
 
 export const NO_BASE_URL_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Attempted to make a request to a server but neither baseUrl param provided nor servers defined in the spec',
+  title: 'Attempted to make a request to a server but neither baseUrl param provided nor servers defined in the spec. Please contact Blackbird support for more details.',
   type: 'NO_BASE_URL_ERROR',
   status: 400,
 };
 export const NO_RESOURCE_PROVIDED_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Route not resolved, no resource provided',
+  title: 'Route not resolved, no resource provided. Please contact Blackbird support for more details.',
   type: 'NO_RESOURCE_PROVIDED_ERROR',
   status: 404,
 };
 export const NO_PATH_MATCHED_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Route not resolved, no path matched',
+  title: 'Route not resolved, no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
   type: 'NO_PATH_MATCHED_ERROR',
   status: 404,
 };
 export const NO_SERVER_MATCHED_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Route not resolved, no server matched',
+  title: 'Route not resolved, no server matched. Please contact Blackbird support for more details.',
   type: 'NO_SERVER_MATCHED_ERROR',
   status: 404,
 };
 export const NO_METHOD_MATCHED_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Route resolved, but no method matched',
+  title: 'Route resolved, but no method matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
   type: 'NO_METHOD_MATCHED_ERROR',
   status: 405,
 };
 export const NO_SERVER_CONFIGURATION_PROVIDED_ERROR: Omit<ProblemJson, 'detail'> = {
-  title: 'Route not resolved, no server configuration provided',
+  title: 'Route not resolved, no server configuration provided. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors',
   type: 'NO_SERVER_CONFIGURATION_PROVIDED_ERROR',
   status: 404,
 };

@@ -56,7 +56,7 @@ const helpers = {
         E.fromOption(() =>
           ProblemJsonError.fromTemplate(
             NOT_FOUND,
-            `Response for contentType: ${mediaType} and exampleKey: ${exampleKey} does not exist.`
+            `Response for contentType: ${mediaType} and exampleKey: ${exampleKey} does not exist. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
           )
         ),
         E.map(bodyExample => ({ code, mediaType, bodyExample, schema }))
@@ -238,7 +238,7 @@ const helpers = {
         pipe(
           responseByForcedStatusCode,
           RE.fromOption(() =>
-            ProblemJsonError.fromTemplate(NOT_FOUND, `Requested status code ${code} is not defined in the document.`)
+            ProblemJsonError.fromTemplate(NOT_FOUND, `Requested status code ${code} is not defined in the document. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`)
           ),
           RE.chain(response =>
             pipe(
@@ -358,7 +358,7 @@ const helpers = {
               E.fromOption(() =>
                 ProblemJsonError.fromTemplate(
                   NOT_FOUND,
-                  `First example for contentType: ${contentWithExamples.mediaType} does not exist.`
+                  `First example for contentType: ${contentWithExamples.mediaType} does not exist. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
                 )
               )
             ),
@@ -368,7 +368,7 @@ const helpers = {
               E.fromOption(() =>
                 ProblemJsonError.fromTemplate(
                   NOT_FOUND,
-                  `Response for contentType: ${contentWithExamples.mediaType} and exampleKey: ${exampleKey} does not exist.`
+                  `Response for contentType: ${contentWithExamples.mediaType} and exampleKey: ${exampleKey} does not exist. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
                 )
               )
             )

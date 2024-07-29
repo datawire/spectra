@@ -15,7 +15,7 @@ This class of errors is returned when Prism is trying to identify the right reso
 
 ### NO_BASE_URL_ERROR
 
-**Message: Attempted to make a request to a server but neither baseUrl param were provided nor servers were defined in the spec**
+**Message: Attempted to make a request to a server but neither baseUrl param were provided nor servers were defined in the spec. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `400`**
 
@@ -25,7 +25,7 @@ This class of errors is returned when Prism is trying to identify the right reso
 
 ### NO_RESOURCE_PROVIDED_ERROR
 
-**Message: Route not resolved, no resource provided**
+**Message: Route not resolved, no resource provided. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `404`**
 
@@ -44,7 +44,7 @@ paths:
 
 ### NO_PATH_MATCHED_ERROR
 
-**Message: Route not resolved, no path matched**
+**Message: Route not resolved, no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `404`**
 
@@ -68,7 +68,7 @@ paths:
 
 ### NO_SERVER_MATCHED_ERROR
 
-**Message: Route not resolved, no server matched**
+**Message: Route not resolved, no server matched. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `404`**
 
@@ -106,7 +106,7 @@ servers:
 
 ### NO_METHOD_MATCHED_ERROR
 
-**Message: Route resolved, but no path matched**
+**Message: Route resolved, but no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `405`**
 
@@ -142,7 +142,7 @@ This class of errors is returned when Prism is validating the request/response a
 
 ### UNPROCESSABLE_ENTITY
 
-**Message: Invalid request**
+**Message: Invalid request. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `422`**
 
@@ -154,7 +154,7 @@ The `detail` field contains further information on the error (whether it's on th
 
 ### NOT_ACCEPTABLE
 
-**Message: The server can't produce a representation for your accept header**
+**Message: The server can't produce a representation for your accept header. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `406`**
 
@@ -182,7 +182,7 @@ curl http://localhost:4010/todos -H "accept: application/json"`
 
 ### NOT_FOUND
 
-**Message: The server can't find the requested content**
+**Message: The server can't find the requested content. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `404`**
 
@@ -190,7 +190,7 @@ curl http://localhost:4010/todos -H "accept: application/json"`
 
 ### VIOLATIONS
 
-**Message #1: Request/Response not valid**
+**Message #1: Request/Response not valid. Please contact Blackbird support for more details.**
 
 **Returned Status Code: `500`**
 
@@ -210,7 +210,7 @@ This class of errors is returned when the current request isn't satisfying the s
 
 ### UNAUTHORIZED
 
-**Message: Invalid security scheme used**
+**Message: Invalid security scheme use. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `401`**
 
@@ -224,7 +224,7 @@ This class of errors is returned when anything goes wrong between your **valid**
 
 ### NO_COMPLEX_OBJECT_TEXT
 
-**Message: Can't serialise complex objects as text**
+**Message: Can't serialise complex objects as text. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `500`**
 
@@ -256,7 +256,7 @@ paths:
 
 ### NO_RESPONSE_DEFINED
 
-**Message: No response defined for the selected operation**
+**Message: No response defined for the selected operation. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `500`**
 
@@ -264,7 +264,7 @@ paths:
 
 ### INVALID_CONTENT_TYPE
 
-**Message: Supported content types: _list_**
+**Message: Supported content types: _list_ . Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `415`**
 
@@ -273,7 +273,7 @@ paths:
 
 ### SCHEMA_TOO_COMPLEX
 
-**Message: Unable to generate [body|header] for response. The schema is too complex to generate.**
+**Message: Unable to generate [body|header] for response. The schema is too complex to generate. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
 
 **Returned Status Code: `500`**
 
