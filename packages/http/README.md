@@ -352,7 +352,7 @@ You would get this in response
 ```bash
 [
   {
-    message: 'Route not resolved, no resource provided. Please contact Blackbird support for more details. Please contact Blackbird support for more details.',
+    message: 'Route not resolved, no resource provided. Please contact Blackbird support for more details.',
     source: 'NO_RESOURCE_PROVIDED_ERROR',
     code: 404,
     severity: 1

@@ -253,7 +253,7 @@ export const createUnauthorisedResponse = (tags?: string[]): ProblemJsonError =>
 export const createUnprocessableEntityResponse = (validations: NonEmptyArray<IPrismDiagnostic>): ProblemJsonError =>
   ProblemJsonError.fromTemplate(
     UNPROCESSABLE_ENTITY,
-    'Your request is not valid and no HTTP validation response was found in the spec, so Blackbird is generating this error for you. Please contact Blackbird support for more details.',
+    'Your request is not valid and no HTTP validation response was found in the spec, so Blackbird is generating this error for you.',
     {
       validation: validations.map(detail => ({
         location: detail.path,

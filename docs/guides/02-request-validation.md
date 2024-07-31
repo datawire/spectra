@@ -34,7 +34,7 @@ Connection: keep-alive
 {
    "type" : "UNPROCESSABLE_ENTITY",
    "title" : "Invalid request.",
-   "detail" : "Your request is not valid and no HTTP validation response was found in the spec, so Blackbird is generating this error for you. Please contact Blackbird support for more details.",
+   "detail" : "Your request is not valid and no HTTP validation response was found in the spec, so Blackbird is generating this error for you.",
    "status" : 422,
    "validation" : [
       {

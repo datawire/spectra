@@ -944,13 +944,13 @@ describe('body params validation', () => {
               location: ['body', 'id'],
               severity: 'Error',
               code: 'type',
-              message: 'Request body property id must be integer. Please contact Blackbird support for more details.',
+              message: 'Request body property id must be integer.',
             },
             {
               location: ['body', 'status'],
               severity: 'Error',
               code: 'enum',
-              message: 'Request body property status must be equal to one of the allowed values: open, close. Please contact Blackbird support for more details.',
+              message: 'Request body property status must be equal to one of the allowed values: open, close.',
             },
           ],
         });
