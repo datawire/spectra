@@ -84,7 +84,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
         return E.left(
           ProblemJsonError.fromTemplate(
             NO_PATH_MATCHED_ERROR,
-            `The route ${requestPath} hasn't been found in the specification file. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
+            `The route ${requestPath} hasn't been found in the specification file.`
           )
         );
       }
@@ -95,7 +95,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
         return E.left(
           ProblemJsonError.fromTemplate(
             NO_METHOD_MATCHED_ERROR,
-            `The route ${requestPath} has been matched, but it does not have "${input.method}" method defined. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`
+            `The route ${requestPath} has been matched, but it does not have "${input.method}" method defined.`
           )
         );
       }
@@ -105,7 +105,7 @@ const route: IPrismComponents<IHttpOperation, IHttpRequest, unknown, IHttpConfig
           return E.left(
             ProblemJsonError.fromTemplate(
               NO_SERVER_CONFIGURATION_PROVIDED_ERROR,
-              `No server configuration has been provided, although ${requestBaseUrl} is set as server url`
+              `No server configuration has been provided, although ${requestBaseUrl} is set as server url.`
             )
           );
         }

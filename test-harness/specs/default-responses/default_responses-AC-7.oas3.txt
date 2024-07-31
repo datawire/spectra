@@ -20,4 +20,4 @@ curl -i -X GET http://localhost:4010/todos?__code=404
 HTTP/1.1 404 Not Found
 content-type: application/problem+json
 
-{"type":"NOT_FOUND","title":"The server cannot find the requested content. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors","status":404,"detail":"Requested status code 404 is not defined in the document."}
+{"type":"https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#not_found","title":"The server cannot find the requested content.","status":404,"detail":"Requested status code 404 is not defined in the document."}

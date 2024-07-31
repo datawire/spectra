@@ -44,7 +44,7 @@ paths:
 
 ### NO_PATH_MATCHED_ERROR
 
-**Message: Route not resolved, no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Route not resolved, no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_path_matched_error**
 
 **Returned Status Code: `404`**
 
@@ -106,7 +106,7 @@ servers:
 
 ### NO_METHOD_MATCHED_ERROR
 
-**Message: Route resolved, but no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Route resolved, but no path matched. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_method_matched_error**
 
 **Returned Status Code: `405`**
 
@@ -130,7 +130,7 @@ paths:
 
 ### NO_SERVER_CONFIGURATION_PROVIDED_ERROR
 
-**Message: Route not resolved, no server configuration provided**
+**Message: Route not resolved, no server configuration provided. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_server_configuration_provided_error**
 
 **Returned Status Code: `404`**
 
@@ -182,7 +182,7 @@ curl http://localhost:4010/todos -H "accept: application/json"`
 
 ### NOT_FOUND
 
-**Message: The server can't find the requested content. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: The server can't find the requested content. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#not_found**
 
 **Returned Status Code: `404`**
 
@@ -210,7 +210,7 @@ This class of errors is returned when the current request isn't satisfying the s
 
 ### UNAUTHORIZED
 
-**Message: Invalid security scheme use. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Invalid security scheme use. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unauthorized**
 
 **Returned Status Code: `401`**
 
@@ -224,7 +224,7 @@ This class of errors is returned when anything goes wrong between your **valid**
 
 ### NO_COMPLEX_OBJECT_TEXT
 
-**Message: Can't serialise complex objects as text. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Can't serialise complex objects as text. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_complex_object_text**
 
 **Returned Status Code: `500`**
 
@@ -256,7 +256,7 @@ paths:
 
 ### NO_RESPONSE_DEFINED
 
-**Message: No response defined for the selected operation. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: No response defined for the selected operation. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_response_defined**
 
 **Returned Status Code: `500`**
 
@@ -264,7 +264,7 @@ paths:
 
 ### INVALID_CONTENT_TYPE
 
-**Message: Supported content types: _list_ . Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Supported content types: _list_ . Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#invalid_content_type**
 
 **Returned Status Code: `415`**
 
@@ -273,7 +273,7 @@ paths:
 
 ### SCHEMA_TOO_COMPLEX
 
-**Message: Unable to generate [body|header] for response. The schema is too complex to generate. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors**
+**Message: Unable to generate [body|header] for response. The schema is too complex to generate. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#schema_too_complex**
 
 **Returned Status Code: `500`**
 

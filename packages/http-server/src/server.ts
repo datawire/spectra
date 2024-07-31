@@ -130,7 +130,7 @@ export const createServer = (operations: IHttpOperation[], opts: IPrismHttpServe
             return IOE.left(
               ProblemJsonError.fromTemplate(
                 VIOLATIONS,
-                'Your request/response is not valid and the --errors flag is set, so Spectra is generating this error for you. Please contact Blackbird support for more details.',
+                'Your request/response is not valid and the --errors flag is set, so Blackbird is generating this error for you. Please contact Blackbird support for more details.',
                 { validation: errorViolations }
               )
             );
