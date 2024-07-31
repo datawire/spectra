@@ -142,7 +142,7 @@ This class of errors is returned when Prism is validating the request/response a
 
 ### UNPROCESSABLE_ENTITY
 
-**Message: Invalid request. Please contact Blackbird support for more details.**
+**Message: Invalid request.**
 
 **Returned Status Code: `422`**
 
