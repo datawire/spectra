@@ -116,7 +116,7 @@ describe('NegotiatorHelpers', () => {
             expect(operationConfig).toMatchObject({
               name: 'NOT_FOUND',
               status: 404,
-              detail: `Response for contentType: ${actualMediaType} and exampleKey: undefined key does not exist. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/spectra-errors`,
+              detail: `Response for contentType: ${actualMediaType} and exampleKey: undefined key does not exist.`,
             })
           );
         });
