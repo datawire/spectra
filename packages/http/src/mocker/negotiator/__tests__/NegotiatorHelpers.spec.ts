@@ -113,7 +113,7 @@ describe('NegotiatorHelpers', () => {
 
           assertLeft(actualConfig, operationConfig =>
             expect(operationConfig).toMatchObject({
-              name: 'NOT_FOUND',
+              name: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#not_found',
               status: 404,
               detail: `Response for contentType: ${actualMediaType} and exampleKey: undefined key does not exist.`,
             })
@@ -419,7 +419,7 @@ describe('NegotiatorHelpers', () => {
       httpOperation = anHttpOperation(httpOperation).instance();
 
       assertLeft(helpers.negotiateOptionsBySpecificCode(httpOperation, desiredOptions, code)(logger), error =>
-        expect(error).toHaveProperty('message', 'The server cannot find the requested content')
+        expect(error).toHaveProperty('message', 'The server cannot find the requested content.')
       );
     });
   });
@@ -700,7 +700,7 @@ describe('NegotiatorHelpers', () => {
           )(logger);
 
           assertLeft(actualResponse, e =>
-            expect(e.message).toBe('The server cannot produce a representation for your accept header')
+            expect(e.message).toBe('The server cannot produce a representation for your accept header.')
           );
         });
       });
@@ -948,7 +948,7 @@ describe('negotiateByPartialOptionsAndHttpContent()', () => {
 
       const negotiationResult = helpers.negotiateByPartialOptionsAndHttpContent(partialOptions, httpContent, logger);
       assertLeft(negotiationResult, e => {
-        expect(e.message).toBe('The server cannot find the requested content');
+        expect(e.message).toBe('The server cannot find the requested content.');
       });
     });
   });

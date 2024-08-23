@@ -21,4 +21,4 @@ curl -i -X OPTIONS http://localhost:4010/todos
 ====expect====
 HTTP/1.1 405 Method Not Allowed
 
-{"type":"https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_method_matched_error","title":"Route resolved, but no method matched.","status":405,"detail":"The route /todos has been matched, but it does not have \"options\" method defined"}
+{"type":"https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_method_matched_error","title":"Route resolved, but no method matched.","status":405,"detail":"The route /todos has been matched, but it does not have \"options\" method defined."}

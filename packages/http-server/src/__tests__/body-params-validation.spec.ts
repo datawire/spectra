@@ -906,7 +906,7 @@ describe('body params validation', () => {
 
         expect(response.status).toBe(422);
         return expect(response.json()).resolves.toMatchObject({
-          type: 'UNPROCESSABLE_ENTITY',
+          type: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity',
           validation: [
             {
               location: ['body'],
@@ -938,19 +938,19 @@ describe('body params validation', () => {
 
         expect(response.status).toBe(422);
         return expect(response.json()).resolves.toMatchObject({
-          type: 'UNPROCESSABLE_ENTITY',
+          type: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity',
           validation: [
             {
               location: ['body', 'id'],
               severity: 'Error',
               code: 'type',
-              message: 'Request body property id must be integer.',
+              message: 'Request body property id must be integer',
             },
             {
               location: ['body', 'status'],
               severity: 'Error',
               code: 'enum',
-              message: 'Request body property status must be equal to one of the allowed values: open, close.',
+              message: 'Request body property status must be equal to one of the allowed values: open, close',
             },
           ],
         });
@@ -1009,7 +1009,7 @@ describe('body params validation', () => {
         expect(response.json()).resolves.toMatchObject({
           detail: 'Cannot deserialize JSON object array in form data request body. Make sure the array is in JSON.',
           status: 415,
-          title: 'Invalid content type',
+          title: 'Invalid content type.',
           type: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#invalid_content_type',
         });
       });
@@ -1052,7 +1052,7 @@ describe('body params validation', () => {
             detail:
               'Boundary parameter for multipart/form-data is not defined or generated in the request header. Try removing manually defined content-type from your request header if it exists.',
             status: 415,
-            title: 'Invalid content type',
+            title: 'Invalid content type.',
             type: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#invalid_content_type',
           });
         });

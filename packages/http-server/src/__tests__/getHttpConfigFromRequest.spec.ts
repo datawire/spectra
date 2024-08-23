@@ -30,7 +30,7 @@ describe('getHttpConfigFromRequest()', () => {
           getHttpConfigFromRequest({
             url: { path: '/', query: { __code: 'default' } },
           }),
-          error => expect(error.name).toEqual('UNPROCESSABLE_ENTITY')
+          error => expect(error.name).toEqual('https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity')
         );
       });
 
@@ -60,7 +60,7 @@ describe('getHttpConfigFromRequest()', () => {
             url: { path: '/' },
             headers: { prefer: 'code=default' },
           }),
-          error => expect(error.name).toEqual('UNPROCESSABLE_ENTITY')
+          error => expect(error.name).toEqual('https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity')
         );
       });
 
