@@ -20,6 +20,11 @@ const mockCommand: CommandModule = {
           boolean: true,
           default: false,
         },
+        config: {
+          description: 'Path to a JSON configuration file.',
+          type: 'string',
+          default: '.spectra.json',
+        },
         'json-schema-faker-fillProperties': {
           description: 'Generate additional properties when using dynamic generation.',
           default: undefined,
@@ -37,11 +42,23 @@ const mockCommand: CommandModule = {
       }),
   handler: async parsedArgs => {
     parsedArgs.jsonSchemaFakerFillProperties = parsedArgs['json-schema-faker-fillProperties'];
-    const { multiprocess, dynamic, port, host, cors, document, errors, verboseLevel, ignoreExamples, jsonSchemaFakerFillProperties } =
-      parsedArgs as unknown as CreateMockServerOptions;
+    const {
+      config,
+      multiprocess,
+      dynamic,
+      port,
+      host,
+      cors,
+      document,
+      errors,
+      verboseLevel,
+      ignoreExamples,
+      jsonSchemaFakerFillProperties,
+    } = parsedArgs as unknown as CreateMockServerOptions;
 
     const createPrism = multiprocess ? createMultiProcessPrism : createSingleProcessPrism;
     const options = {
+      config,
       cors,
       dynamic,
       port,
@@ -52,7 +69,7 @@ const mockCommand: CommandModule = {
       verboseLevel,
       ignoreExamples,
       jsonSchemaFakerFillProperties,
-    };
+    } as const;
 
     await runPrismAndSetupWatcher(createPrism, options);
   },

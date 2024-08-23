@@ -41,6 +41,7 @@ const proxyCommand: CommandModule = {
     parsedArgs.validateRequest = parsedArgs['validate-request'];
     const p: CreateProxyServerOptions = pick(
       parsedArgs as unknown as CreateProxyServerOptions,
+      'config',
       'dynamic',
       'cors',
       'host',

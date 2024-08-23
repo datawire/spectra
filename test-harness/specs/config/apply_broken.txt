@@ -1,0 +1,37 @@
+====test====
+Given I mock and specify a broken config
+When I send a request to an operation
+Then the config should not influence the response
+====spec====
+openapi: "3.1.0"
+info:
+  version: "0.0"
+  title: Config Test
+paths:
+  /pets/{petId}:
+    get:
+      description: Get a pet by ID
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+====config====
+{
+    "dynamic": true,
+    "ignoreExamples": 2
+}
+====server====
+mock -p 4010 --config ${config} ${document}
+====command====
+curl -i http://localhost:4010/pets/2
+====expect====
+HTTP/1.1 200 OK
+content-type: application/json
+
+{"name":"string"}
