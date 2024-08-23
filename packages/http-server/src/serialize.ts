@@ -19,10 +19,11 @@ const serializers = [
         return data;
       }
 
-      throw Object.assign(new Error('Cannot serialise complex objects as text'), {
-        detail: 'Cannot serialise complex objects as text. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_complex_object_text',
+      throw Object.assign(new Error('Cannot serialise complex objects as text.'), {
+        detail:
+          'Cannot serialise complex objects as text. Visit the Blackbird documentation for more details here: https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_complex_object_text',
         status: 500,
-        name: 'NO_COMPLEX_OBJECT_TEXT',
+        name: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#no_complex_object_text',
       });
     },
   },
