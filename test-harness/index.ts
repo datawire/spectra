@@ -23,27 +23,40 @@ describe('harness', () => {
     const data = fs.readFileSync(path.join(__dirname, './specs/', file), { encoding: 'utf8' });
     const parsed = parseSpecFile(data);
 
-    let tmpFileHandle: tmp.FileSyncObject;
+    const tmpFileHandles: tmp.FileSyncObject[] = [];
+    const assets: Record<string, string> = {};
 
     beforeAll(() => {
-      tmpFileHandle = tmp.fileSync({
-        postfix: '.yml',
-        dir: undefined,
-        name: undefined,
-        prefix: undefined,
-        tries: 10,
-        template: undefined,
-        unsafeCleanup: undefined,
-      });
+      for (const key of ['spec', 'config']) {
+        if (!parsed[key]) {
+          continue;
+        }
 
-      fs.writeFileSync(tmpFileHandle.name, parsed.spec, { encoding: 'utf8' });
+        const tmpFileHandle = tmp.fileSync({
+          postfix: key === 'spec' ? '.yaml' : '.json',
+          dir: undefined,
+          name: undefined,
+          prefix: undefined,
+          tries: 10,
+          template: undefined,
+          unsafeCleanup: undefined,
+        });
+
+        tmpFileHandles.push(tmpFileHandle);
+        assets[key === 'spec' ? 'document' : key] = tmpFileHandle.name;
+        fs.writeFileSync(tmpFileHandle.name, parsed[key], { encoding: 'utf8' });
+      }
     });
 
-    afterAll(() => tmpFileHandle.removeCallback(undefined, undefined, undefined, undefined));
+    afterAll(() => {
+      for (const tmpFileHandle of tmpFileHandles) {
+        tmpFileHandle.removeCallback(undefined, undefined, undefined, undefined)
+      }
+    });
     describe(file, () => {
       let prismHandle: ChildProcess;
       beforeEach(async () => {
-        prismHandle = await startPrism(parsed.server, tmpFileHandle.name);
+        prismHandle = await startPrism(parsed.server, assets);
       });
 
       afterEach(() => {
@@ -93,9 +106,9 @@ describe('harness', () => {
   });
 });
 
-function startPrism(server: string, filename: string): Promise<ChildProcess> {
+function startPrism(server: string, assets: Record<string, string>): Promise<ChildProcess> {
   return new Promise((resolve, reject) => {
-    const serverArgs = server.split(/ +/).map(t => t.trim().replace('${document}', filename));
+    const serverArgs = server.split(/ +/).map(t => t.trim().replace(/\$\{([a-z]+)}/g, (_, key) => assets[key] ?? key))
     const prismMockProcessHandle = spawn(path.join(__dirname, '../cli-binaries/prism-cli'), serverArgs);
 
     const timeout = setTimeout(() => {

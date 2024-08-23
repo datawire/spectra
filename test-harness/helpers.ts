@@ -26,11 +26,12 @@ export const xmlValidator = {
 };
 
 export function parseSpecFile(spec: string) {
-  const regex = /====(server|test|spec|command|expect|expect-loose|expect-keysOnly)====\r?\n/gi;
+  const regex = /====(server|test|spec|config|command|expect|expect-loose|expect-keysOnly)====\r?\n/gi;
   const splitted = spec.split(regex);
 
   const testIndex = splitted.findIndex(t => t === 'test');
   const specIndex = splitted.findIndex(t => t === 'spec');
+  const configIndex = splitted.findIndex(t => t === 'config');
   const serverIndex = splitted.findIndex(t => t === 'server');
   const commandIndex = splitted.findIndex(t => t === 'command');
   const expectIndex = splitted.findIndex(t => t === 'expect');
@@ -40,6 +41,7 @@ export function parseSpecFile(spec: string) {
   return {
     test: splitted[1 + testIndex],
     spec: splitted[1 + specIndex],
+    config: configIndex === -1 ? null : splitted[1 + configIndex],
     server: splitted[1 + serverIndex],
     command: splitted[1 + commandIndex],
     expect: splitted[1 + expectIndex],

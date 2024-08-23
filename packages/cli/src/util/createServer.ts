@@ -15,6 +15,8 @@ import { getHttpOperationsFromSpec } from '@stoplight/prism-http';
 import { createExamplePath } from './paths';
 import { attachTagsToParamsValues, transformPathParamsValues } from './colorizer';
 import { configureExtensionsUserProvided } from '../extensions';
+import type { JSONSchemaFakerOptions } from 'json-schema-faker';
+import { type Observable, observable, observe } from './observable';
 
 type PrismLogDescriptor = pino.LogDescriptor & {
   name: keyof typeof LOG_COLOR_MAP;
@@ -69,16 +71,20 @@ const createSingleProcessPrism: CreatePrism = options => {
   });
 };
 
-async function createPrismServerWithLogger(options: CreateBaseServerOptions, logInstance: pino.Logger) {
+async function createPrismServerWithLogger(options: Observable<CreateBaseServerOptions>, logInstance: pino.Logger) {
   const operations = await getHttpOperationsFromSpec(options.document);
-  const jsonSchemaFakerCliParams: { [option: string]: any } = {
-    ['fillProperties']: options.jsonSchemaFakerFillProperties,
-  };
-  await configureExtensionsUserProvided(options.document, jsonSchemaFakerCliParams);
-
   if (operations.length === 0) {
     throw new Error('No operations found in the current file.');
   }
+
+  const jsonSchemaFakerCliParams = observable<JSONSchemaFakerOptions>({
+    fillProperties: options.jsonSchemaFakerFillProperties,
+  });
+  observe(options, 'jsonSchemaFakerFillProperties', () => {
+    jsonSchemaFakerCliParams.fillProperties = options.jsonSchemaFakerFillProperties;
+  });
+
+  await configureExtensionsUserProvided(options.document, jsonSchemaFakerCliParams);
 
   const validateRequest = isProxyServerOptions(options) ? options.validateRequest : true;
   const shared = {
@@ -87,7 +93,14 @@ async function createPrismServerWithLogger(options: CreateBaseServerOptions, log
     checkSecurity: true,
     errors: options.errors,
     upstreamProxy: undefined,
-    mock: { dynamic: options.dynamic, ignoreExamples: options.ignoreExamples },
+    mock: {
+      get dynamic() {
+        return options.dynamic;
+      },
+      get ignoreExamples() {
+        return options.ignoreExamples;
+      },
+    },
   };
 
   const config: IHttpConfig = isProxyServerOptions(options)
@@ -146,6 +159,7 @@ function isProxyServerOptions(options: CreateBaseServerOptions): options is Crea
  * @property {boolean} jsonSchemaFakerFillProperties - Used to override the default json-schema-faker extension value
  */
 type CreateBaseServerOptions = {
+  config?: string;
   dynamic: boolean;
   cors: boolean;
   host: string;
