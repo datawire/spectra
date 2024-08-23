@@ -32,7 +32,7 @@ export const UNAUTHORIZED: Omit<ProblemJson, 'detail'> = {
 
 export const VIOLATIONS: Omit<ProblemJson, 'detail'> = {
   type: 'VIOLATIONS',
-  title: 'Request/Response not valid. Please contact Blackbird support for more details.',
+  title: 'Request/Response not valid.',
   status: 500,
 };
 
