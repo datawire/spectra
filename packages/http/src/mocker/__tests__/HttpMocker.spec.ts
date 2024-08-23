@@ -368,7 +368,7 @@ describe('mocker', () => {
           assertLeft(response, result => {
             expect(result).toMatchObject({
               detail: 'Response for contentType: application/json and exampleKey: missingKey does not exist.',
-              name: 'NOT_FOUND',
+              name: 'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#not_found',
               status: 404,
             });
           });
