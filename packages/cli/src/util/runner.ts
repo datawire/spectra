@@ -21,7 +21,7 @@ export async function runPrismAndSetupWatcher(
   const observableOptions = observable({ ...options });
   const possibleServer = await createPrism(observableOptions);
   if (!possibleServer) {
-    throw new Error('Failed to start Prism. No possible server was returned.');
+    return;
   }
 
   const configPath = resolveConfigPath(options.config);
