@@ -1,0 +1,56 @@
+name: Image Build on Merge
+
+on:
+  push:
+    branches:
+      - 'main'
+
+env:
+  REGISTRY_PROJECT: datawireio/blackbird/spectra
+  REGISTRY_REGION: us-central1-docker.pkg.dev
+
+jobs:
+  build-and-push:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Git Config
+      shell: bash
+      run: |
+        set -x
+        git config --global user.email '${{ secrets.GH_AUTO_EMAIL }}'
+        git config --global user.name '${{ secrets.GH_AUTO_USER }}'
+
+    - name: Docker Login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: 'projects/863968914497/locations/global/workloadIdentityPools/github-pool/providers/github'
+        service_account: 'github@datawireio.iam.gserviceaccount.com'
+
+    - name: Setup Google Cloud SDK
+      uses : google-github-actions/setup-gcloud@v1
+
+    - name: Authenticate docker to gcloud
+      run: |
+        gcloud auth configure-docker ${{ env.REGISTRY_REGION }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        context: .
+        file: Dockerfile
+        platforms: linux/amd64
+        tags: |
+          ${{ env.REGISTRY_REGION }}/${{ env.REGISTRY_PROJECT }}:latest
