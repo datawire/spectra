@@ -20,6 +20,7 @@ import { merge } from 'lodash/fp';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either';
+import * as O from 'fp-ts/Option';
 import * as IOE from 'fp-ts/IOEither';
 
 function searchParamsToNameValues(searchParams: URLSearchParams): IHttpNameValues {
@@ -109,9 +110,26 @@ export const createServer = (operations: IHttpOperation[], opts: IPrismHttpServe
       E.map(operationSpecificConfig => ({ ...config, mock: merge(config.mock, operationSpecificConfig) }))
     );
 
-    pipe(
+    const delay: E.Either<Error, O.Option<number>> = pipe(
+      requestConfig,
+      E.map(config => (config.mock.delay ? O.some(config.mock.delay) : O.none))
+    );
+
+    void pipe(
       TE.fromEither(requestConfig),
       TE.chain(requestConfig => prism.request(input, operations, requestConfig)),
+      TE.chainFirst(() =>
+        pipe(
+          TE.fromEither(delay),
+          TE.chainFirstTaskK(
+            delay => () =>
+              O.fold(
+                () => Promise.resolve(),
+                (value: number) => new Promise(resolve => setTimeout(resolve, value))
+              )(delay)
+          )
+        )
+      ),
       TE.chainIOEitherK(response => {
         const { output } = response;
 

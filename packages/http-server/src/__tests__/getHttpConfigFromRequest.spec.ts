@@ -30,7 +30,10 @@ describe('getHttpConfigFromRequest()', () => {
           getHttpConfigFromRequest({
             url: { path: '/', query: { __code: 'default' } },
           }),
-          error => expect(error.name).toEqual('https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity')
+          error =>
+            expect(error.name).toEqual(
+              'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+            )
         );
       });
 
@@ -54,13 +57,27 @@ describe('getHttpConfigFromRequest()', () => {
         );
       });
 
-      test('validates code is a number', () => {
-        return assertLeft(
+      test('validates code is a valid http status', () => {
+        assertLeft(
           getHttpConfigFromRequest({
             url: { path: '/' },
             headers: { prefer: 'code=default' },
           }),
-          error => expect(error.name).toEqual('https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity')
+          error =>
+            expect(error.name).toEqual(
+              'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+            )
+        );
+
+        assertLeft(
+          getHttpConfigFromRequest({
+            url: { path: '/' },
+            headers: { prefer: 'code=500000' },
+          }),
+          error =>
+            expect(error.name).toEqual(
+              'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+            )
         );
       });
 
@@ -85,6 +102,30 @@ describe('getHttpConfigFromRequest()', () => {
             headers: { prefer: 'dynamic=true' },
           }),
           parsed => expect(parsed).toHaveProperty('dynamic', true)
+        );
+      });
+
+      test('extracts delay', () => {
+        assertRight(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=100' } }), parsed =>
+          expect(parsed).toHaveProperty('delay', 100)
+        );
+
+        assertRight(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=0' } }), parsed =>
+          expect(parsed).toHaveProperty('delay', 0)
+        );
+      });
+
+      test('validates delay is a non-negative number', () => {
+        assertLeft(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=bear' } }), error =>
+          expect(error.name).toEqual(
+            'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+          )
+        );
+
+        assertLeft(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=-100' } }), error =>
+          expect(error.name).toEqual(
+            'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+          )
         );
       });
     });
