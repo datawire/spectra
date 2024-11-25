@@ -128,6 +128,18 @@ describe('getHttpConfigFromRequest()', () => {
           )
         );
       });
+
+      test('validates delay is smaller than or equal to 5000', () => {
+        assertLeft(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=5001' } }), error =>
+          expect(error.name).toEqual(
+            'https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity'
+          )
+        );
+
+        assertRight(getHttpConfigFromRequest({ url: { path: '/' }, headers: { prefer: 'delay=5000' } }), parsed =>
+          expect(parsed).toHaveProperty('delay', 5000)
+        );
+      });
     });
   });
 });
