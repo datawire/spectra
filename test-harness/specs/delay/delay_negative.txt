@@ -28,7 +28,7 @@ paths:
 mock -p 4010 ${document}
 ====command====
 curl -i http://localhost:4010/widget -H "Prefer: delay=-5"
-====expect-loose====
+====expect====
 HTTP/1.1 422 Unprocessable Entity
 
-{"type":"https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity","title":"Invalid request.","status":422,"detail":"optional property \"delay\"\n└─ cannot decode -5, should be a positive integer"}
+{"type":"https://www.getambassador.io/docs/blackbird/latest/reference/mock-server-errors#unprocessable_entity","title":"Invalid request.","status":422,"detail":"optional property \"delay\"\n└─ cannot decode -5, should be a positive integer smaller than or equal to 5000"}

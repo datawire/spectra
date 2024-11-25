@@ -23,7 +23,7 @@ const PreferencesDecoder = D.partial({
   delay: pipe(
     D.string,
     IntegerFromString,
-    D.refine((n): n is number => n >= 0, 'a positive integer')
+    D.refine((n): n is number => n >= 0 && n <= 5000, 'a positive integer smaller than or equal to 5000')
   ),
   dynamic: pipe(D.string, BooleanFromString),
   example: D.string,
