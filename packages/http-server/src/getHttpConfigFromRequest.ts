@@ -10,11 +10,21 @@ const BooleanFromString = D.parse<string, boolean>(s =>
 );
 
 const IntegerFromString = D.parse<string, number>(s => {
-  return /^\d{3}$/.test(s) ? D.success(parseInt(s, 10)) : D.failure(s, 'a number');
+  const value = Number(s);
+  return Number.isInteger(value) ? D.success(value) : D.failure(s, 'an integer');
 });
 
 const PreferencesDecoder = D.partial({
-  code: pipe(D.string, IntegerFromString),
+  code: pipe(
+    D.string,
+    IntegerFromString,
+    D.refine((n): n is number => n >= 100 && n <= 599, 'a http status code')
+  ),
+  delay: pipe(
+    D.string,
+    IntegerFromString,
+    D.refine((n): n is number => n >= 0, 'a positive integer')
+  ),
   dynamic: pipe(D.string, BooleanFromString),
   example: D.string,
 });
@@ -33,7 +43,12 @@ export const getHttpConfigFromRequest = (
     PreferencesDecoder.decode(preferences),
     E.bimap(
       err => ProblemJsonError.fromTemplate(UNPROCESSABLE_ENTITY, D.draw(err)),
-      parsed => ({ code: parsed?.code, exampleKey: parsed?.example, dynamic: parsed?.dynamic })
+      parsed => ({
+        code: parsed?.code,
+        delay: parsed?.delay,
+        dynamic: parsed?.dynamic,
+        exampleKey: parsed?.example,
+      })
     )
   );
 };

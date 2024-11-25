@@ -11,6 +11,7 @@ export type PrismHttpComponents = IPrismComponents<IHttpOperation, IHttpRequest,
 export interface IHttpOperationConfig {
   mediaTypes?: string[];
   code?: number;
+  delay?: number;
   exampleKey?: string;
   dynamic: boolean;
   ignoreExamples?: boolean;
