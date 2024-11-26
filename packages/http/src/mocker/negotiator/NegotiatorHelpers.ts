@@ -1,8 +1,9 @@
 import { IHttpOperation, IHttpOperationResponse, IMediaTypeContent, IHttpHeaderParam } from '@stoplight/types';
 import * as E from 'fp-ts/Either';
 import { NonEmptyArray, fromArray } from 'fp-ts/NonEmptyArray';
-import { findIndex } from 'fp-ts/Array';
+import { findIndex, sort } from 'fp-ts/Array';
 import * as O from 'fp-ts/Option';
+import type { Ord } from 'fp-ts/Ord';
 import * as R from 'fp-ts/Reader';
 import * as RE from 'fp-ts/ReaderEither';
 import { pipe } from 'fp-ts/function';
@@ -21,11 +22,22 @@ import {
   findResponseByStatusCode,
   findFirstResponse,
   IWithExampleMediaContent,
+  findResponseByStatusCodes,
 } from './InternalHelpers';
 import { IHttpNegotiationResult, NegotiatePartialOptions, NegotiationOptions } from './types';
 import { JSONSchema, ProblemJsonError } from '../../types';
 
 const outputNoContentFoundMessage = (contentTypes: string[]) => `Unable to find content for ${contentTypes}`;
+
+const isRateSatisfied = (rate: number) => Math.random() * 100 <= rate;
+
+const randomComparator: Ord<number> = {
+  equals: () => false,
+  compare: () => (Math.random() - 0.5 > 0.5 ? 1 : -1),
+};
+
+const randomSort = <A extends number>(arr: NonEmptyArray<A>): NonEmptyArray<A> =>
+  pipe(arr, sort(randomComparator)) as NonEmptyArray<A>;
 
 const createEmptyResponse = (code: string, headers: IHttpHeaderParam[], mediaTypes: string[]) => {
   return pipe(
@@ -226,6 +238,18 @@ const helpers = {
     );
   },
 
+  negotiateOptionsForErrorCodes(
+    httpOperation: IHttpOperation,
+    desiredOptions: NegotiationOptions,
+    statusCodes: NonEmptyArray<number>
+  ): RE.ReaderEither<Logger, Error, IHttpNegotiationResult> {
+    return pipe(
+      findResponseByStatusCodes(httpOperation.responses, randomSort(statusCodes)),
+      RE.fromOption(() => ProblemJsonError.fromTemplate(NO_RESPONSE_DEFINED)),
+      RE.chain(response => helpers.negotiateOptionsBySpecificResponse(httpOperation.method, desiredOptions, response))
+    );
+  },
+
   negotiateOptionsBySpecificCode(
     httpOperation: IHttpOperation,
     desiredOptions: NegotiationOptions,
@@ -268,11 +292,24 @@ const helpers = {
     httpOperation: IHttpOperation,
     desiredOptions: NegotiationOptions
   ): RE.ReaderEither<Logger, Error, IHttpNegotiationResult> {
-    const { code } = desiredOptions;
-    if (code) {
-      return helpers.negotiateOptionsBySpecificCode(httpOperation, desiredOptions, code);
-    }
-    return helpers.negotiateOptionsForUnspecifiedCode(httpOperation, desiredOptions);
+    const { code, chaos } = desiredOptions;
+
+    return pipe(
+      O.fromNullable(code),
+      O.fold(
+        () =>
+          pipe(
+            O.fromNullable(chaos),
+            O.chain(O.fromPredicate(chaos => chaos.enabled === true && isRateSatisfied(chaos.rate))),
+            O.map(chaos => chaos.codes as NonEmptyArray<number>),
+            O.fold(
+              () => helpers.negotiateOptionsForUnspecifiedCode(httpOperation, desiredOptions),
+              statusCodes => helpers.negotiateOptionsForErrorCodes(httpOperation, desiredOptions, statusCodes)
+            )
+          ),
+        code => helpers.negotiateOptionsBySpecificCode(httpOperation, desiredOptions, code)
+      )
+    );
   },
 
   findResponse(

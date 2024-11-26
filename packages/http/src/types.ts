@@ -12,6 +12,18 @@ export interface IHttpOperationConfig {
   mediaTypes?: string[];
   code?: number;
   delay?: number;
+  chaos?: {
+    rate: number;
+  } & (
+    | {
+        enabled: true;
+        codes: [number, ...number[]];
+      }
+    | {
+        enabled: false;
+        codes: number[];
+      }
+  );
   exampleKey?: string;
   dynamic: boolean;
   ignoreExamples?: boolean;
