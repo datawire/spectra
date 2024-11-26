@@ -86,6 +86,22 @@ export function findResponseByStatusCode(
   );
 }
 
+export function findResponseByStatusCodes(
+  httpResponses: IHttpOperationResponse[],
+  statusCodes: NEA.NonEmptyArray<number>
+): O.Option<IHttpOperationResponse> {
+  const [first, ...others] = statusCodes;
+
+  return others.reduce(
+    (previous, current) =>
+      pipe(
+        previous,
+        O.alt(() => findResponseByStatusCode(httpResponses, current))
+      ),
+    findResponseByStatusCode(httpResponses, first)
+  );
+}
+
 export function findDefaultResponse(
   httpResponses: IHttpOperationResponse[],
   statusCode = 200
