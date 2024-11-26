@@ -5,9 +5,11 @@ import * as chalk from 'chalk';
 import * as cluster from 'cluster';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 import * as pino from 'pino';
 import * as signale from 'signale';
 import * as split from 'split2';
+
 import { PassThrough, Readable } from 'stream';
 import { LOG_COLOR_MAP } from '../const/options';
 import { CreatePrism } from './runner';
@@ -94,6 +96,27 @@ async function createPrismServerWithLogger(options: Observable<CreateBaseServerO
     errors: options.errors,
     upstreamProxy: undefined,
     mock: {
+      get chaos(): IHttpConfig['mock']['chaos'] {
+        const rate = options.chaos?.rate ?? 10;
+        return pipe(
+          O.fromNullable(options.chaos),
+          O.fold(
+            () => ({ enabled: false, rate, codes: [] }),
+            chaos =>
+              chaos.enabled === true
+                ? {
+                    enabled: true,
+                    rate,
+                    codes: chaos.codes,
+                  }
+                : {
+                    enabled: false,
+                    rate,
+                    codes: chaos.codes ?? [],
+                  }
+          )
+        );
+      },
       get dynamic() {
         return options.dynamic;
       },
@@ -162,6 +185,19 @@ type CreateBaseServerOptions = {
   config?: string;
   dynamic: boolean;
   cors: boolean;
+  chaos?: {
+    enabled?: boolean;
+    rate?: number;
+    codes?: number[];
+  } & (
+    | {
+        enabled: true;
+        codes: [number, ...number[]];
+      }
+    | {
+        enabled?: false;
+      }
+  );
   host: string;
   port: number;
   document: string;

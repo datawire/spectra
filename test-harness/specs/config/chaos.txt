@@ -1,0 +1,50 @@
+====test====
+Given I mock and specify a config with chaos enabled
+When I send a request to an operation
+Then the config should influence the response
+====spec====
+openapi: "3.1.0"
+info:
+  version: "0.0"
+  title: Config Test
+paths:
+  /pets/{petId}:
+    get:
+      description: Get a pet by ID
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    const: Odie
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    const: Unauthorized
+
+====config====
+{
+  "chaos": {
+    "enabled": true,
+    "rate": 100,
+    "codes": [401]
+  }
+}
+====server====
+mock -p 4010 --config ${config} ${document}
+====command====
+curl -i http://localhost:4010/pets/2
+====expect====
+HTTP/1.1 401 OK
+content-type: application/json
+
+{"message":"Unauthorized"}
