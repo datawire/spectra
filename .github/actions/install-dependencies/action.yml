@@ -1,0 +1,13 @@
+name: install-dependencies
+description: Install dependencies for the project
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: ".nvmrc"
+
+    - name: Install Dependencies
+      shell: bash
+      run: yarn --frozen-lockfile
