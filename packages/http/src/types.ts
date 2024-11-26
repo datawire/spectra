@@ -57,13 +57,7 @@ export class ProblemJsonError extends Error {
     detail?: string,
     additional?: Dictionary<unknown>
   ): ProblemJsonError {
-    return new ProblemJsonError(
-      `${template.type}`,
-      template.title,
-      template.status,
-      detail || '',
-      additional
-    );
+    return new ProblemJsonError(`${template.type}`, template.title, template.status, detail || '', additional);
   }
 
   public static toProblemJson(
