@@ -1,0 +1,56 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout local
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Lint
+        shell: bash
+        run: yarn lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout local
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Test
+        shell: bash
+        run: yarn test
+
+  test-harness:
+    name: Test Harness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout local
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        uses: ./.github/actions/install-dependencies
+
+      - name: Build
+        shell: bash
+        run: |
+          yarn build
+          yarn build.binary -- --target=node18
+
+      - name: Test
+        shell: bash
+        run: yarn test.harness
+
