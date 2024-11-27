@@ -250,6 +250,15 @@ const helpers = {
     );
   },
 
+  negotiateEmptyResponse(code: number): RE.ReaderEither<Logger, Error, IHttpNegotiationResult> {
+    return withLogger(() =>
+      pipe(
+        createEmptyResponse(String(code), [], ['*/*']),
+        E.fromOption(() => new Error(`Unable to create an empty response for ${code}`))
+      )
+    );
+  },
+
   negotiateOptionsBySpecificCode(
     httpOperation: IHttpOperation,
     desiredOptions: NegotiationOptions,
@@ -304,7 +313,11 @@ const helpers = {
             O.map(chaos => chaos.codes as NonEmptyArray<number>),
             O.fold(
               () => helpers.negotiateOptionsForUnspecifiedCode(httpOperation, desiredOptions),
-              statusCodes => helpers.negotiateOptionsForErrorCodes(httpOperation, desiredOptions, statusCodes)
+              statusCodes =>
+                pipe(
+                  helpers.negotiateOptionsForErrorCodes(httpOperation, desiredOptions, statusCodes),
+                  RE.orElse(() => helpers.negotiateEmptyResponse(statusCodes[0]))
+                )
             )
           ),
         code => helpers.negotiateOptionsBySpecificCode(httpOperation, desiredOptions, code)
