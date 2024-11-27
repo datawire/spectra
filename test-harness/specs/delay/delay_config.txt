@@ -1,0 +1,35 @@
+====test====
+When I send a request to an operation
+And I have a config with a delay of 2500ms
+And in the headers I specify `Prefer: delay=100`
+Then I get a response with a delay of 100ms
+====spec====
+openapi: "3.1.1"
+info:
+  version: "0"
+  title: Delays test
+  description: Delays test
+paths:
+  /delay:
+    get:
+      description: widget details
+      responses:
+        "200":
+          description: delay response
+          content:
+            application/json:
+              schema:
+                type: integer
+                default: 0
+====config====
+{
+  "delay": 2500
+}
+====server====
+mock -p 4010 ${document}
+====command====
+curl -i -s -w "%{time_total}" -H "Prefer: delay=100" "http://127.0.0.1:4010/delay" | awk '{gsub(/0([0-9]+\.[0-9]+)/, ($1 * 1000 < 2500 ? "Value is lower than 2500" : "Value is higher than 2500")); print}'
+====expect-loose====
+HTTP/1.1 200 OK
+
+Value is lower than 2500

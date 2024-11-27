@@ -8,6 +8,7 @@ export type Config = {
   ignoreExamples?: boolean;
   dynamic?: boolean;
   jsonSchemaFakerFillProperties?: boolean;
+  delay?: number | [lowerBound: number, upperBound: number];
   chaos?: {
     enabled?: boolean;
     rate?: number;
@@ -26,6 +27,7 @@ export type Config = {
 const ajv = new Ajv.Ajv2020({
   strict: true,
   allErrors: true,
+  $data: true,
 });
 
 const validate = ajv.compile({
@@ -34,6 +36,34 @@ const validate = ajv.compile({
     ignoreExamples: { type: 'boolean' },
     dynamic: { type: 'boolean' },
     jsonSchemaFakerFillProperties: { type: 'boolean' },
+    delay: {
+      oneOf: [
+        {
+          type: 'integer',
+          minimum: 0,
+          maximum: 5000,
+        },
+        {
+          type: 'array',
+          prefixItems: [
+            {
+              type: 'integer',
+              minimum: 0,
+              exclusiveMaximum: 5000,
+            },
+            {
+              type: 'integer',
+              minimum: {
+                $data: '1/0',
+              },
+              maximum: 5000,
+            },
+          ],
+          minItems: 2,
+          items: false,
+        },
+      ],
+    },
     chaos: {
       type: 'object',
       unevaluatedProperties: false,
@@ -102,10 +132,7 @@ export async function safeApplyConfig(
 
   try {
     const input = JSON.parse(content);
-    const valid = validate(input) as unknown as (input: unknown) => input is CreateMockServerOptions;
-    if (!valid) {
-      throw ajv.errorsText(validate.errors);
-    }
+    assertValidConfig(input);
 
     const merged = { ...defaultConfig, ...input };
     for (const key of Object.keys(merged)) {

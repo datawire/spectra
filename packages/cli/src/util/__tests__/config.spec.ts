@@ -6,11 +6,20 @@ describe('assertValidConfig', () => {
       ignoreExamples: true,
       dynamic: false,
       jsonSchemaFakerFillProperties: true,
+      delay: [100, 200],
       chaos: {
         enabled: true,
         rate: 50,
         codes: [500, 502],
       },
+    };
+
+    expect(assertValidConfig.bind(null, validConfig)).not.toThrow();
+  });
+
+  it('should accept numeric delay', () => {
+    const validConfig: Config = {
+      delay: 100,
     };
 
     expect(assertValidConfig.bind(null, validConfig)).not.toThrow();
@@ -72,6 +81,22 @@ describe('assertValidConfig', () => {
           rate: 50,
           codes: [],
         },
+      })
+    ).toThrow();
+  });
+
+  it('should require upper latency bound to be higher than lower latency bound', () => {
+    expect(
+      assertValidConfig.bind(null, {
+        delay: [100, 50],
+      })
+    ).toThrow();
+  });
+
+  it('should throw an error for a config with negative delay', () => {
+    expect(
+      assertValidConfig.bind(null, {
+        delay: -100,
       })
     ).toThrow();
   });

@@ -117,6 +117,9 @@ async function createPrismServerWithLogger(options: Observable<CreateBaseServerO
           )
         );
       },
+      get delay() {
+        return options.delay;
+      },
       get dynamic() {
         return options.dynamic;
       },
@@ -185,6 +188,7 @@ type CreateBaseServerOptions = {
   config?: string;
   dynamic: boolean;
   cors: boolean;
+  delay?: number | [number, number];
   chaos?: {
     enabled?: boolean;
     rate?: number;
