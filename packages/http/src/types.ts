@@ -11,7 +11,7 @@ export type PrismHttpComponents = IPrismComponents<IHttpOperation, IHttpRequest,
 export interface IHttpOperationConfig {
   mediaTypes?: string[];
   code?: number;
-  delay?: number;
+  delay?: number | [number, number];
   chaos?: {
     rate: number;
   } & (

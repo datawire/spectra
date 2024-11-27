@@ -112,7 +112,16 @@ export const createServer = (operations: IHttpOperation[], opts: IPrismHttpServe
 
     const delay: E.Either<Error, O.Option<number>> = pipe(
       requestConfig,
-      E.map(config => (config.mock.delay ? O.some(config.mock.delay) : O.none))
+      E.map(config =>
+        pipe(
+          O.fromNullable(config.mock.delay),
+          O.chain(delay =>
+            Array.isArray(delay)
+              ? O.some(Math.floor(Math.random() * (delay[1] - delay[0] + 1) + delay[0]))
+              : O.some(delay)
+          )
+        )
+      )
     );
 
     void pipe(
