@@ -1,0 +1,52 @@
+====test====
+Given I mock and specify a missing error code for chaos and I have a wildcard response range
+When I send a request to an operation
+Then the response should negotiate the wildcard response range
+====spec====
+openapi: "3.1.0"
+info:
+  version: "0.0"
+  title: Config Test
+paths:
+  /pets/{petId}:
+    get:
+      description: Get a pet by ID
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+        "4XX":
+          description: A client error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    const: hello
+                required:
+                  - message
+                additionalProperties: false
+====config====
+{
+    "chaos": {
+      "enabled": true,
+      "rate": 100,
+      "codes": [401]
+    }
+}
+====server====
+mock -p 4010 --config ${config} ${document}
+====command====
+curl -i http://localhost:4010/pets/2
+====expect====
+HTTP/1.1 401 Unauthorized
+content-type: application/json
+
+{"message":"hello"}
