@@ -26,7 +26,7 @@ export const xmlValidator = {
 };
 
 export function parseSpecFile(spec: string) {
-  const regex = /====(server|test|spec|config|command|expect|expect-loose|expect-keysOnly)====\r?\n/gi;
+  const regex = /====(server|test|spec|config|command|script|expect|expect-stdout|expect-loose|expect-keysOnly)====\r?\n/gi;
   const splitted = spec.split(regex);
 
   const testIndex = splitted.findIndex(t => t === 'test');
@@ -34,18 +34,26 @@ export function parseSpecFile(spec: string) {
   const configIndex = splitted.findIndex(t => t === 'config');
   const serverIndex = splitted.findIndex(t => t === 'server');
   const commandIndex = splitted.findIndex(t => t === 'command');
+  const scriptIndex = splitted.findIndex(t => t === 'script');
   const expectIndex = splitted.findIndex(t => t === 'expect');
   const expectLooseIndex = splitted.findIndex(t => t === 'expect-loose');
+  const expectStdoutIndex = splitted.findIndex(t => t === 'expect-stdout');
   const expectKeysOnlyIndex = splitted.findIndex(t => t === 'expect-keysOnly');
+
+  if (expectStdoutIndex !== -1 && (expectIndex !== -1 || expectLooseIndex !== -1 || expectKeysOnlyIndex !== -1)) {
+    throw new Error('Cannot have expect-stdout with expect, expect-loose, or expect-keysOnly');
+  }
 
   return {
     test: splitted[1 + testIndex],
     spec: splitted[1 + specIndex],
     config: configIndex === -1 ? null : splitted[1 + configIndex],
     server: splitted[1 + serverIndex],
-    command: splitted[1 + commandIndex],
-    expect: splitted[1 + expectIndex],
-    expectLoose: splitted[1 + expectLooseIndex],
-    expectKeysOnly: splitted[1 + expectKeysOnlyIndex],
+    command: commandIndex === -1 ? null : splitted[1 + commandIndex],
+    script: scriptIndex === -1 ? null : splitted[1 + scriptIndex],
+    expect: expectIndex === -1 ? null : splitted[1 + expectIndex],
+    expectStdout: expectStdoutIndex === -1 ? null : splitted[1 + expectStdoutIndex],
+    expectLoose: expectLooseIndex === -1 ? null : splitted[1 + expectLooseIndex],
+    expectKeysOnly: expectKeysOnlyIndex === -1 ? null : splitted[1 + expectKeysOnlyIndex],
   };
 }

@@ -39,6 +39,11 @@ const randomComparator: Ord<number> = {
 const randomSort = <A extends number>(arr: NonEmptyArray<A>): NonEmptyArray<A> =>
   pipe(arr, sort(randomComparator)) as NonEmptyArray<A>;
 
+const randomStatusCode = (statusCodes: NonEmptyArray<number>): number => {
+  const index = Math.floor(Math.random() * statusCodes.length);
+  return statusCodes[index];
+};
+
 const createEmptyResponse = (code: string, headers: IHttpHeaderParam[], mediaTypes: string[]) => {
   return pipe(
     code,
@@ -316,7 +321,7 @@ const helpers = {
               statusCodes =>
                 pipe(
                   helpers.negotiateOptionsForErrorCodes(httpOperation, desiredOptions, statusCodes),
-                  RE.orElse(() => helpers.negotiateEmptyResponse(statusCodes[0]))
+                  RE.orElse(() => helpers.negotiateEmptyResponse(randomStatusCode(statusCodes)))
                 )
             )
           ),
