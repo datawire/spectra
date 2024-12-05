@@ -1,0 +1,48 @@
+====test====
+Given I mock and specify missing error codes for chaos
+When I send a request to an operation
+Then the response should be blank with one of the status code
+====spec====
+openapi: "3.1.0"
+info:
+  version: "0.0"
+  title: Config Test
+paths:
+  /pets/{petId}:
+    get:
+      description: Get a pet by ID
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+====config====
+{
+    "chaos": {
+      "enabled": true,
+      "rate": 100,
+      "codes": [401, 404, 500]
+    }
+}
+====server====
+mock -p 4010 --config ${config} ${document}
+====script====
+seenCodes=""
+count=0
+while [ $count -lt 20 ]; do
+  code=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:4010/pets/2)
+  if ! echo "$seenCodes" | grep -q "$code"; then
+    seenCodes="$seenCodes $code"
+  fi
+  count=$((count + 1))
+done
+
+sortedCodes=$(echo "$seenCodes" | tr ' ' '\n' | sort | tr '\n' ' ')
+echo "$sortedCodes"
+====expect-stdout====
+401 404 500

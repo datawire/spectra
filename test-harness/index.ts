@@ -1,4 +1,4 @@
-import { ChildProcess, spawn, spawnSync } from 'child_process';
+import { ChildProcess, spawn, spawnSync, execSync } from 'child_process';
 import * as fs from 'fs';
 import { validate } from 'gavel';
 import glob = require('glob');
@@ -64,14 +64,29 @@ describe('harness', () => {
       });
 
       test(parsed.test, async () => {
-        const [command, ...args] = parsed.command.split(/ +/).map(t => t.trim());
+        let stdout: string;
+        if (parsed.script) {
+          stdout = execSync(parsed.script,{
+            encoding: 'utf8',
+          });
+        } else {
+          const [command, ...args] = parsed.command.split(/ +/).map(t => t.trim());
+          ({ stdout } = spawnSync(command, args, {
+            shell: true,
+            encoding: 'utf8',
+            windowsVerbatimArguments: false,
+          }))
+        }
 
-        const clientCommandHandle = spawnSync(command, args, {
-          shell: true,
-          encoding: 'utf8',
-          windowsVerbatimArguments: false,
-        });
-        const output: any = parseResponse(clientCommandHandle.stdout.trim());
+        if (parsed.expectStdout !== null) {
+          expect(stdout.trim()).toStrictEqual(parsed.expectStdout.trim());
+        }
+
+        if (parsed.expect === null && parsed.expectLoose === null && parsed.expectKeysOnly === null) {
+          return;
+        }
+
+        const output: any = parseResponse(stdout.trim());
         const expected: any = parseResponse((parsed.expect || parsed.expectLoose || parsed.expectKeysOnly).trim());
 
         const isXml = xmlValidator.test(get(output, ['header', 'content-type'], ''), expected.body);
