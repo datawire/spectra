@@ -32,6 +32,18 @@ const sharedOptions: Dictionary<Options> = {
     default: process.env.NODE_ENV === 'production',
   },
 
+  watch: {
+    description: 'Watch the file system for changes and restart the server.',
+    boolean: true,
+    default: true,
+  },
+
+  watchStrategy: {
+    choices: ['polling', 'native-dir', 'native-file'],
+    description: 'The strategy to use when watching the file system for changes.',
+    default: 'polling',
+  },
+
   errors: {
     description: 'Specifies whether request/response violations marked as errors will produce an error response',
     required: true,

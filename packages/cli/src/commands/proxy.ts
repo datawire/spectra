@@ -48,6 +48,8 @@ const proxyCommand: CommandModule = {
       'port',
       'document',
       'multiprocess',
+      'watch',
+      'watchStrategy',
       'upstream',
       'errors',
       'validateRequest',
@@ -58,7 +60,13 @@ const proxyCommand: CommandModule = {
     );
 
     const createPrism = p.multiprocess ? createMultiProcessPrism : createSingleProcessPrism;
-    await runPrismAndSetupWatcher(createPrism, p);
+    const controller = new AbortController();
+    try {
+      await runPrismAndSetupWatcher(createPrism, p, controller.signal);
+    } catch (e) {
+      controller.abort();
+      throw e;
+    }
   },
 };
 

@@ -1,12 +1,12 @@
 import type { IPrismHttpServer } from '@stoplight/prism-http-server/src/types';
-import * as chokidar from 'chokidar';
-import * as os from 'os';
 import * as process from 'process';
 import { join, isAbsolute } from 'path';
+import { locks } from 'web-locks';
 import { CreateMockServerOptions } from './createServer';
 import { getHttpOperationsFromSpec } from '@stoplight/prism-http';
 import { safeApplyConfig } from './config';
 import { disposeHandlers, type Observable, observable } from './observable';
+import { type FsWatchOptions, watchFs } from './fsWatcher/index';
 
 export type CreatePrism = (options: Observable<CreateMockServerOptions>) => Promise<IPrismHttpServer | void>;
 
@@ -16,7 +16,8 @@ function resolveConfigPath(config: string | undefined): string | undefined {
 
 export async function runPrismAndSetupWatcher(
   createPrism: CreatePrism,
-  options: CreateMockServerOptions
+  options: CreateMockServerOptions,
+  signal: AbortSignal
 ): Promise<IPrismHttpServer | void> {
   const observableOptions = observable({ ...options });
   const possibleServer = await createPrism(observableOptions);
@@ -31,51 +32,61 @@ export async function runPrismAndSetupWatcher(
 
   let server: IPrismHttpServer = possibleServer;
 
-  const watcher = chokidar.watch([observableOptions.document, configPath].filter(Boolean) as string[], {
-    // See https://github.com/paulmillr/chokidar#persistence
-    persistent: os.platform() === 'darwin',
-    disableGlobbing: true,
-    awaitWriteFinish: { stabilityThreshold: 500, pollInterval: 100 },
-  });
+  if (!options.watch) {
+    return server;
+  }
 
-  watcher.on('change', path => {
-    if (path === configPath) {
-      server.logger.info('Config file changed, applying changes...');
-      void safeApplyConfig(server.logger, options, observableOptions, configPath);
-      return;
-    }
+  const watchOptions: FsWatchOptions =
+    options.watchStrategy === 'polling'
+      ? {
+          type: 'polling',
+          signal,
+        }
+      : {
+          type: 'native',
+          scope: options.watchStrategy === 'native-file' ? 'file' : 'dir',
+          signal,
+        };
 
-    server.logger.info('Restarting Prism...');
-    disposeHandlers(observableOptions);
+  const files = [options.document, configPath].filter(Boolean) as readonly string[];
 
-    getHttpOperationsFromSpec(observableOptions.document)
-      .then(operations => {
+  void watchFs(process.cwd(), files, watchOptions, async path => {
+    await locks.request(path, async () => {
+      if (path === configPath) {
+        server.logger.info('Config file changed, applying changes...');
+        await safeApplyConfig(server.logger, options, observableOptions, configPath);
+        return;
+      }
+
+      server.logger.info('Restarting Prism...');
+      disposeHandlers(observableOptions);
+
+      try {
+        const operations = await getHttpOperationsFromSpec(observableOptions.document);
         if (operations.length === 0) {
           server.logger.info('No operations found in the current file, continuing with the previously loaded spec.');
         } else {
-          return server
-            .close()
-            .then(() => {
-              server.logger.info('Loading the updated operations...');
-
-              return createPrism(observableOptions);
-            })
-            .then(newServer => {
-              if (newServer) {
-                server = newServer;
-              }
-            });
+          await server.close();
+          server.logger.info('Loading the updated operations...');
+          const newServer = await createPrism(observableOptions);
+          if (newServer) {
+            server = newServer;
+          }
         }
-      })
-      .catch(() => {
+      } catch (ex) {
         server.logger.warn('Something went terribly wrong, trying to start Prism with the original document.');
-
-        return server
-          .close()
-          .then(() => createPrism(observableOptions))
-          .catch(() => process.exit(1));
-      });
+        try {
+          await server.close();
+          await createPrism(observableOptions);
+        } catch {
+          process.exit(1);
+        }
+      }
+    });
+  }).catch(error => {
+    server.logger.error(`Error watching the file system: ${String(error)}`);
+    process.exit(1);
   });
 
-  return new Promise(resolve => watcher.once('ready', () => resolve(server)));
+  return server;
 }

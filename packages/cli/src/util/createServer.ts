@@ -2,7 +2,7 @@ import { createLogger } from '@stoplight/prism-core';
 import { IHttpConfig, IHttpRequest } from '@stoplight/prism-http';
 import { createServer as createHttpServer } from '@stoplight/prism-http-server';
 import * as chalk from 'chalk';
-import * as cluster from 'cluster';
+import cluster from 'cluster';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
@@ -54,7 +54,7 @@ const createMultiProcessPrism: CreatePrism = async options => {
 
     return createPrismServerWithLogger(options, logInstance).catch((e: Error) => {
       logInstance.fatal(e.message);
-      cluster.worker.kill();
+      cluster.worker?.kill();
       throw e;
     });
   }
@@ -206,6 +206,8 @@ type CreateBaseServerOptions = {
   port: number;
   document: string;
   multiprocess: boolean;
+  watch: boolean;
+  watchStrategy: 'polling' | 'native-dir' | 'native-file';
   errors: boolean;
   verboseLevel: string;
   ignoreExamples: boolean;
