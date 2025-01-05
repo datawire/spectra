@@ -49,6 +49,8 @@ const mockCommand: CommandModule = {
       port,
       host,
       cors,
+      watch,
+      watchStrategy,
       document,
       errors,
       verboseLevel,
@@ -64,6 +66,8 @@ const mockCommand: CommandModule = {
       port,
       host,
       document,
+      watch,
+      watchStrategy,
       multiprocess,
       errors,
       verboseLevel,
@@ -71,7 +75,13 @@ const mockCommand: CommandModule = {
       jsonSchemaFakerFillProperties,
     } as const;
 
-    await runPrismAndSetupWatcher(createPrism, options);
+    const controller = new AbortController();
+    try {
+      await runPrismAndSetupWatcher(createPrism, options, controller.signal);
+    } catch (e) {
+      controller.abort();
+      throw e;
+    }
   },
 };
 
