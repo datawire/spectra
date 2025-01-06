@@ -39,6 +39,10 @@ jobs:
       run: |
         gcloud auth configure-docker ${{ env.REGISTRY_REGION }}
 
+    - name: Set outputs
+      id: vars
+      run: echo "git_sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v4
       with:
@@ -48,3 +52,4 @@ jobs:
         platforms: linux/amd64
         tags: |
           ${{ env.REGISTRY_REGION }}/${{ env.REGISTRY_PROJECT }}:latest
+          ${{ env.REGISTRY_REGION }}/${{ env.REGISTRY_PROJECT }}:${{ steps.vars.outputs.git_sha_short }}
