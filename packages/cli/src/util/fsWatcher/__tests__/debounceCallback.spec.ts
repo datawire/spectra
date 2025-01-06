@@ -37,6 +37,18 @@ describe('debounceCallback', () => {
     expect(callback).toHaveBeenCalledWith('test-path');
   });
 
+  it('should track multiple paths separately', () => {
+    const callback = jest.fn();
+    const signal = new AbortController().signal;
+    const debouncedCallback = debounceCallback(callback, signal);
+
+    debouncedCallback('test-path-1');
+    debouncedCallback('test-path-2');
+    jest.advanceTimersByTime(500);
+    expect(callback).toHaveBeenCalledWith('test-path-1');
+    expect(callback).toHaveBeenCalledWith('test-path-2');
+  });
+
   it('should clear the timeout when the signal is aborted', () => {
     const callback = jest.fn();
     const abortController = new AbortController();

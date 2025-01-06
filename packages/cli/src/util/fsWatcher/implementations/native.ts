@@ -10,7 +10,7 @@ async function nativeWatch(path: string, options: WatchOptions, callback: (event
       callback(event);
     }
   } catch (err) {
-    if (!(err instanceof Error) || err.name !== 'AbortError') {
+    if (typeof err !== 'object' || err === null || (err as { name?: string }).name !== 'AbortError') {
       throw err;
     }
   }
@@ -31,7 +31,6 @@ async function nativeWatchFsDir(paths: readonly string[], callback: Callback, op
     filesInDir.set(dir, new Set([path]));
     promises.push(
       nativeWatch(dir, options, event => {
-        if (event.eventType !== 'change') return;
         if (event.filename === null) return;
         const files = filesInDir.get(dir);
         const filepath = join(dir, event.filename);
@@ -50,10 +49,8 @@ async function nativeWatchFsFile(paths: readonly string[], callback: Callback, o
 
   for (const path of paths) {
     promises.push(
-      nativeWatch(path, options, event => {
-        if (event.eventType === 'change') {
-          callback(path);
-        }
+      nativeWatch(path, options, () => {
+        callback(path);
       })
     );
   }
