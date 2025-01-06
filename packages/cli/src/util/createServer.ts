@@ -2,7 +2,6 @@ import { createLogger } from '@stoplight/prism-core';
 import { IHttpConfig, IHttpRequest } from '@stoplight/prism-http';
 import { createServer as createHttpServer } from '@stoplight/prism-http-server';
 import * as chalk from 'chalk';
-import cluster from 'cluster';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
@@ -19,6 +18,8 @@ import { attachTagsToParamsValues, transformPathParamsValues } from './colorizer
 import { configureExtensionsUserProvided } from '../extensions';
 import type { JSONSchemaFakerOptions } from 'json-schema-faker';
 import { type Observable, observable, observe } from './observable';
+
+const cluster = require('cluster') as typeof import('cluster').default;
 
 type PrismLogDescriptor = pino.LogDescriptor & {
   name: keyof typeof LOG_COLOR_MAP;
@@ -37,8 +38,8 @@ const cliSpecificLoggerOptions: pino.LoggerOptions = {
 };
 
 const createMultiProcessPrism: CreatePrism = async options => {
-  if (cluster.isMaster) {
-    cluster.setupMaster({ silent: true });
+  if (cluster.isPrimary) {
+    cluster.setupPrimary({ silent: true });
 
     signale.await({ prefix: chalk.bgWhiteBright.black('[CLI]'), message: 'Starting Prism…' });
 
