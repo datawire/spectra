@@ -18,6 +18,7 @@ import { attachTagsToParamsValues, transformPathParamsValues } from './colorizer
 import { configureExtensionsUserProvided } from '../extensions';
 import type { JSONSchemaFakerOptions } from 'json-schema-faker';
 import { type Observable, observable, observe } from './observable';
+import { readDocument } from './readDocument';
 
 const cluster = require('cluster') as typeof import('cluster').default;
 
@@ -75,7 +76,8 @@ const createSingleProcessPrism: CreatePrism = options => {
 };
 
 async function createPrismServerWithLogger(options: Observable<CreateBaseServerOptions>, logInstance: pino.Logger) {
-  const operations = await getHttpOperationsFromSpec(options.document);
+  const document = await readDocument(options.document);
+  const operations = getHttpOperationsFromSpec(document);
   if (operations.length === 0) {
     throw new Error('No operations found in the current file.');
   }
@@ -87,7 +89,7 @@ async function createPrismServerWithLogger(options: Observable<CreateBaseServerO
     jsonSchemaFakerCliParams.fillProperties = options.jsonSchemaFakerFillProperties;
   });
 
-  await configureExtensionsUserProvided(options.document, jsonSchemaFakerCliParams);
+  configureExtensionsUserProvided(document, jsonSchemaFakerCliParams);
 
   const validateRequest = isProxyServerOptions(options) ? options.validateRequest : true;
   const shared = {
