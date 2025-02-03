@@ -7,6 +7,7 @@ import { getHttpOperationsFromSpec } from '@stoplight/prism-http';
 import { safeApplyConfig } from './config';
 import { disposeHandlers, type Observable, observable } from './observable';
 import { type FsWatchOptions, watchFs } from './fsWatcher/index';
+import { readDocument } from './readDocument';
 
 export type CreatePrism = (options: Observable<CreateMockServerOptions>) => Promise<IPrismHttpServer | void>;
 
@@ -62,7 +63,7 @@ export async function runPrismAndSetupWatcher(
       disposeHandlers(observableOptions);
 
       try {
-        const operations = await getHttpOperationsFromSpec(observableOptions.document);
+        const operations = getHttpOperationsFromSpec(await readDocument(observableOptions.document));
         if (operations.length === 0) {
           server.logger.info('No operations found in the current file, continuing with the previously loaded spec.');
         } else {

@@ -1,17 +1,13 @@
-import * as $RefParser from '@stoplight/json-schema-ref-parser';
-import { decycle } from '@stoplight/json';
 import { get, camelCase, forOwn } from 'lodash';
 import { JSONSchemaFaker } from 'json-schema-faker';
 import type { JSONSchemaFakerOptions } from 'json-schema-faker';
 import { resetJSONSchemaGenerator } from '@stoplight/prism-http';
 import { type Observable, observeAll } from './util/observable';
 
-export async function configureExtensionsUserProvided(
-  specFilePathOrObject: string | object,
+export function configureExtensionsUserProvided(
+  result: Record<string, unknown>,
   cliParamOptions: Observable<JSONSchemaFakerOptions>
-): Promise<void> {
-  const result = decycle(await new $RefParser().dereference(specFilePathOrObject));
-
+): void {
   resetJSONSchemaGenerator();
 
   observeAll(cliParamOptions, key => {
