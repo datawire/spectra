@@ -1,5 +1,5 @@
 import { createLogger } from '@stoplight/prism-core';
-import { getHttpOperationsFromSpec } from '@stoplight/prism-http';
+import { getHttpOperationsFromSpec, getSpec } from '@stoplight/prism-http';
 import { IHttpConfig, IHttpMockConfig } from '@stoplight/prism-http';
 import { resolve } from 'path';
 import { merge } from 'lodash';
@@ -22,7 +22,7 @@ function checkErrorPayloadShape(payload: string) {
 }
 
 async function instantiatePrism(specPath: string, configOverride?: Partial<IHttpConfig>) {
-  const operations = await getHttpOperationsFromSpec(specPath);
+  const operations = getHttpOperationsFromSpec(await getSpec(specPath));
   const server = createServer(operations, {
     components: { logger },
     config: merge<IHttpMockConfig, Partial<IHttpConfig> | undefined>(
