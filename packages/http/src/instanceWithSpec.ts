@@ -5,6 +5,7 @@ import type { Logger } from 'pino';
 import { pipe } from 'fp-ts/function';
 import { isRight, isLeft } from 'fp-ts/lib/Either';
 import { IPrismOutput } from '@stoplight/prism-core';
+import { getSpec } from './utils/getSpec';
 
 export type PrismOkResult = {
   result: 'ok';
@@ -22,7 +23,7 @@ export async function createAndCallPrismInstanceWithSpec(
   request: IHttpRequest,
   logger: Logger
 ): Promise<PrismErrorResult | PrismOkResult> {
-  const operations = await getHttpOperationsFromSpec(spec);
+  const operations = getHttpOperationsFromSpec(await getSpec(spec));
   const prism = createInstance(options, { logger });
   const result = await pipe(prism.request(request, operations))();
   if (isRight(result)) {
