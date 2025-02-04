@@ -1,5 +1,4 @@
 import faker from '@faker-js/faker';
-import { cloneDeep } from 'lodash';
 import { JSONSchema } from '../../types';
 
 import { JSONSchemaFaker } from 'json-schema-faker';
@@ -8,6 +7,8 @@ import { Either, toError, tryCatch } from 'fp-ts/Either';
 import { IHttpContent, IHttpOperation, IHttpParam } from '@stoplight/types';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/lib/Either';
+import * as A from 'fp-ts/Array';
+import * as R from 'fp-ts/Record';
 import { stripWriteOnlyProperties } from '../../utils/filterRequiredProperties';
 
 // necessary as workaround broken types in json-schema-faker
@@ -74,9 +75,23 @@ export function generate(
     E.fromOption(() => Error('Cannot strip writeOnly properties')),
     E.chain(updatedSource =>
       tryCatch(
-        // necessary as workaround broken types in json-schema-faker
-        // @ts-ignore
-        () => sortSchemaAlphabetically(JSONSchemaFaker.generate({ ...cloneDeep(updatedSource), __bundled__: bundle })),
+        () =>
+          pipe(
+            {
+              ...JSON.parse(JSON.stringify(updatedSource)),
+              __bundled__: bundle,
+            },
+            targetSchema =>
+              pipe(
+                Object.getOwnPropertyDescriptors(source),
+                R.toEntries,
+                A.filter(([, descriptor]) => !descriptor!.enumerable),
+                R.fromEntries,
+                descriptors => Object.defineProperties(targetSchema, descriptors as Record<string, PropertyDescriptor>)
+              ),
+            JSONSchemaFaker.generate,
+            sortSchemaAlphabetically
+          ),
         toError
       )
     ),

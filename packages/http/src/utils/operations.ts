@@ -1,32 +1,23 @@
 import { transformOas3Operations } from '@stoplight/http-spec/oas3/operation';
 import { transformOas2Operations } from '@stoplight/http-spec/oas2/operation';
 import { transformPostmanCollectionOperations } from '@stoplight/http-spec/postman/operation';
-import { bundleTarget } from '@stoplight/json';
 import { IHttpOperation } from '@stoplight/types';
 import { get } from 'lodash';
 import type { Spec } from 'swagger-schema-official';
 import type { OpenAPIObject } from 'openapi3-ts';
 import type { CollectionDefinition } from 'postman-collection';
+import { bundleHttpOperation } from './bundleHttpOperation';
 
 export function getHttpOperationsFromSpec(result: Record<string, unknown>): IHttpOperation[] {
-  let operations: IHttpOperation[] = [];
+  let operations: IHttpOperation[];
   if (isOpenAPI2(result)) operations = transformOas2Operations(result);
   else if (isOpenAPI3(result)) operations = transformOas3Operations(result);
   else if (isPostmanCollection(result)) operations = transformPostmanCollectionOperations(result);
   else throw new Error('Unsupported document format');
 
-  operations.forEach((op, i, ops) => {
-    ops[i] = bundleTarget({
-      document: JSON.parse(
-        JSON.stringify({
-          ...result,
-          __target__: op,
-        })
-      ),
-      path: '#/__target__',
-      cloneDocument: false,
-    });
-  });
+  for (const operation of operations) {
+    bundleHttpOperation(result, operation);
+  }
 
   return operations;
 }
