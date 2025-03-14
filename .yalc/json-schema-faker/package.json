@@ -1,0 +1,104 @@
+{
+  "name": "json-schema-faker",
+  "version": "0.5.8",
+  "description": "JSON-Schema + fake data generators",
+  "homepage": "http://json-schema-faker.js.org",
+  "types": "index.d.ts",
+  "type": "module",
+  "bin": {
+    "jsf": "bin/gen.cjs"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/main.mjs",
+  "unpkg": "dist/bundle.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/main.mjs"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./dist/main.cjs"
+      },
+      "browser": "./dist/bundle.js"
+    }
+  },
+  "scripts": {
+    "dev": "npm run test:schema -- -w",
+    "test": "npm run test:ci -- && npm run test:schema",
+    "test:e2e": "testcafe chrome:headless tests/e2e/*.test.mjs --colors -a 'npx live-server dist/e2e --no-browser' --",
+    "test:ci": "npm run coverage:unit && npm run report -- -r lcov",
+    "test:all": "npm run test:unit && npm run test:schema",
+    "test:run": "_mocha --exit --colors --recursive --parallel --loader=testdouble --watch-files 'tests/**' --watch-files 'src/**' --watch-extensions js,json -bR spec",
+    "test:unit": "npm run test:run tests/unit --",
+    "test:schema": "npm run test:run tests/schema --",
+    "test:coverage": "npm run coverage:all && npm run report -- -r html",
+    "test:integration": "npm run test:run tests/integration --",
+    "coverage": "c8 --reporter=lcov -x '**/tests/**' -x '**/*.spec.mjs'",
+    "coverage:all": "npm run coverage -- npm run test:all",
+    "coverage:unit": "npm run coverage -- npm run test:unit",
+    "report": "c8 report",
+    "lint": "eslint --ext mjs,svelte src tests",
+    "_pretest": "npm run lint",
+    "_graphviz": "madge src --dot > structure.gv",
+    "mortero": "mortero -Ddist -spublic -X{_base,lib} -ecss.less",
+    "watch": "npm run mortero -- --platform browser -dw",
+    "build": "NODE_ENV=production npm run mortero -- -fS --no-minify --platform browser",
+    "pretest": "npm run lint && npm run build -- -ymain -yshared",
+    "copy:vendor": "cp node_modules/json-schema-ref-parser/dist/ref-parser.min.js dist/vendor.js",
+    "copy:bundle": "concat -o dist/bundle.js dist/vendor.js dist/main.iife.js",
+    "copy:wargs": "concat -o dist/wargs.cjs node_modules/wargs/dist/wargs.cjs",
+    "entry:cjs": "node patch.js",
+    "postbuild": "npm run copy:vendor && npm run entry:cjs && npm run copy:bundle && vite build --outDir dist/e2e",
+    "prebuild": "mkdir -p dist && npm run copy:wargs",
+    "codecov": "codecov -e TRAVIS_NODE_VERSION"
+  },
+  "mortero": {
+    "rename": [
+      "**/src/**:{filepath/1}",
+      "**/web/**:{filepath/1}",
+      "**/*.{cjs,mjs}.js:{filename}"
+    ],
+    "bundle": [
+      "**/main.*.js",
+      "**/shared.js",
+      "**/app.js"
+    ],
+    "external": [
+      "json-schema-ref-parser"
+    ],
+    "options": {
+      "less": {
+        "plugins": [
+          "less-plugin-autoprefix"
+        ]
+      }
+    }
+  },
+  "author": "Alvaro Cabrera <pateketrueke@gmail.com> (https://soypache.co)",
+  "contributors": [
+    "Ajay Karat <info@devilsgarage.com> (http://devilsgarage.com/)",
+    "Tomasz Ducin <tomasz@ducin.it> (http://ducin.it)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/json-schema-faker/json-schema-faker"
+  },
+  "bugs": "https://github.com/json-schema-faker/json-schema-faker/issues",
+  "license": "MIT",
+  "keywords": [
+    "json",
+    "jsonschema",
+    "fake",
+    "mocks"
+  ],
+  "files": [
+    "dist/*.*",
+    "index.d.ts"
+  ],
+  "dependencies": {
+    "json-schema-ref-parser": "^6.1.0"
+  },
+  "yalcSig": "e3654e140196111930665a4e72dc519a"
+}
