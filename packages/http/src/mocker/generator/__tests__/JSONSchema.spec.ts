@@ -144,7 +144,7 @@ describe('JSONSchema generator', () => {
       });
     });
 
-    describe('when used with a schema that is not valid', () => {
+    describe('when used with a schema that has unresolvable refs', () => {
       const schema: JSONSchema = {
         type: 'object',
         properties: {
@@ -155,6 +155,90 @@ describe('JSONSchema generator', () => {
       };
 
       it('will return a left', () => assertLeft(generate(operation, {}, schema)));
+    });
+
+    describe('when used with a schema that contains unknown vocabulary', () => {
+      it('will not generate any values for unknown words', () => {
+        const schema: JSONSchema = {
+          allOf: [
+            {
+              unknown: {
+                type: 'string',
+              },
+            } as any,
+            {
+              type: 'object',
+              properties: {
+                test: {
+                  enum: [1],
+                },
+                baz: {
+                  'x-test': {
+                    type: 'null',
+                  },
+                },
+              },
+              additionalProperties: false,
+            },
+            {
+              type: 'object',
+              properties: {
+                test: {},
+                baz: {
+                  enum: ['baz'],
+                },
+              },
+              additionalProperties: false,
+            },
+          ],
+        };
+
+        assertRight(generate(operation, {}, schema), instance => {
+          expect(instance).toStrictEqual({
+            test: 1,
+            baz: 'baz',
+          });
+        });
+      });
+
+      it('will not include them in the overall limit', () => {
+        const schema: JSONSchema = {
+          type: 'array',
+          maxItems: 10,
+          items: {
+            wrong: {
+              type: 'array',
+              items: {
+                type: 'number',
+              },
+              minItems: 10000,
+            } satisfies JSONSchema,
+          } as any,
+        };
+
+        assertRight(generate(operation, {}, schema), instance => {
+          expect(instance).toBeInstanceOf(Array);
+          expect((instance as unknown[]).length).toBeLessThanOrEqual(10);
+        });
+      });
+
+      it('will not try to resolve any references', () => {
+        const schema: JSONSchema = {
+          anyOf: [
+            {
+              type: 'integer',
+              minimum: 1,
+              'x-ext': {
+                $ref: 1234,
+              },
+            } as any,
+          ],
+        };
+
+        assertRight(generate(operation, {}, schema), instance => {
+          expect(instance).toBeGreaterThan(1);
+        });
+      });
     });
 
     describe('when writeOnly properties are provided', () => {

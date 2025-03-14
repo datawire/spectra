@@ -4,6 +4,7 @@ WORKDIR /usr/src/prism
 
 COPY package.json yarn.lock /usr/src/prism/
 COPY packages/ /usr/src/prism/packages/
+COPY .yalc/ /usr/src/prism/.yalc/
 
 RUN yarn && yarn build
 

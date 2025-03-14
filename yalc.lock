@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "json-schema-faker": {
+      "signature": "e3654e140196111930665a4e72dc519a",
+      "file": true,
+      "replaced": "0.5.6"
+    }
+  }
+}
